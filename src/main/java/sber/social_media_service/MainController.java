@@ -28,7 +28,7 @@ public class MainController {
     @GetMapping("/get_friends/{person_id}")
     public ResponseEntity<String> getFriendsInfo(@PathVariable(value = "person_id") long personId) {
 
-        String answer = "";
+        String answer;
 
         try {
             URI uri = uriBuilder.setScheme("https").setHost("api.vk.com").setPath("method/friends.get")
