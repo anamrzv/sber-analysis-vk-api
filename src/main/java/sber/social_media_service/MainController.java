@@ -35,56 +35,50 @@ public class MainController {
                     .setParameter("access_token", vkConnectionAgent.getTOKEN())
                     .setParameter("v", "5.199")
                     .setParameter("user_id", String.valueOf(personId))
-                    .setParameter("fields", "city,country,sex,contacts,education,relation,status,universities")
+                    .setParameter("fields", "education,relation,universities")
                     .setParameter("order", "hints")
-                    .setParameter("count", "15")
+                    .setParameter("count", "10")
                     .build();
 
-            HttpClient client = HttpClientBuilder.create().build();
-            HttpGet request = new HttpGet(uri);
-            HttpResponse response = client.execute(request);
-
-            int status = response.getStatusLine().getStatusCode();
-
-            if (status == 200) {
-                var entity = response.getEntity();
-                answer = EntityUtils.toString(entity, "UTF-8");
-            }
+            answer = getAnswerFromVkApi(uri);
+            return ResponseEntity.ok(answer);
         } catch (URISyntaxException | IOException e) {
             return ResponseEntity.badRequest().build();
         }
-
-        return ResponseEntity.ok(answer);
     }
 
     @GetMapping("/get_profile/{person_id}")
     public ResponseEntity<String> getProfileInfo(@PathVariable(value = "person_id") long personId) {
-        String answer = "";
 
         try {
             URI uri = uriBuilder.setScheme("https").setHost("api.vk.com").setPath("method/users.get")
                     .setParameter("access_token", vkConnectionAgent.getTOKEN())
                     .setParameter("v", "5.199")
                     .setParameter("user_ids", String.valueOf(personId))
-                    .setParameter("fields", "about,career,connections,contacts,city,country,sex,site,interests,military,personal,relation,relatives,universities,status")
+                    .setParameter("fields", "about,career,contacts,city,country,site,personal,relation,relatives,universities,status")
                     .build();
 
-            HttpClient client = HttpClientBuilder.create().build();
-            HttpGet request = new HttpGet(uri);
-            HttpResponse response = client.execute(request);
-
-            int status = response.getStatusLine().getStatusCode();
-
-            if (status == 200) {
-                var entity = response.getEntity();
-                answer = EntityUtils.toString(entity, "UTF-8");
-            }
+            String answer = getAnswerFromVkApi(uri);
+            return ResponseEntity.ok(answer);
         } catch (URISyntaxException | IOException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
 
-        return ResponseEntity.ok(answer);
+    private String getAnswerFromVkApi(URI uri) throws IOException {
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpGet request = new HttpGet(uri);
+        HttpResponse response = client.execute(request);
+
+        String answer = "";
+
+        int status = response.getStatusLine().getStatusCode();
+
+        if (status == 200) {
+            var entity = response.getEntity();
+            answer = EntityUtils.toString(entity, "UTF-8").replace("\"", "\\\"");
+        }
+        return answer;
     }
 }
 
-//add prompt
