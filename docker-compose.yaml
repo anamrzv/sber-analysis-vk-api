@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  sber-vk-api:
+    container_name: sber-vk-api
+    build: .
+    ports:
+      - "8080:8080"
+    command: "java -jar social_media_service-0.0.1-SNAPSHOT.jar"
+
